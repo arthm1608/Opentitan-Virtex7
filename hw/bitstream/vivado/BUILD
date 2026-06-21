@@ -282,3 +282,38 @@ pkg_filegroup(
     ],
     tags = ["manual"],
 )
+
+
+# -------------------------------------------------------------------------
+# Virtex-7 XC7VX690T Targets
+# -------------------------------------------------------------------------
+
+fusesoc_build(
+    name = "fpga_virtex7",
+    testonly = True,
+    systems = ["lowrisc:systems:chip_earlgrey_virtex7:0.1"],
+    target = "synth",
+    srcs = [
+        "//hw:rtl_files",
+        _CW310_TESTROM,
+        _OTP_RMA,
+    ],
+    cores = ["//hw:cores"],
+    data = ["//hw/ip/otbn:rtl_files"],
+    flags = [
+        "--BootRomInitFile=" + _CW310_TESTROM_PATH,
+        "--OtpMacroMemInitFile=" + _OTP_RMA_PATH,
+    ],
+    output_groups = {
+        "bitstream": [_FPGA_PATH_TMPL.format("chip_earlgrey_virtex7", "lowrisc_systems_chip_earlgrey_virtex7_0.1.bit")],
+        "mmi": [_FPGA_PATH_TMPL.format("chip_earlgrey_virtex7", "memories.mmi")],
+    },
+)
+
+filegroup(
+    name = "fpga_virtex7_test_rom",
+    testonly = True,
+    srcs = [":fpga_virtex7"],
+    output_group = "bitstream",
+    tags = ["manual"],
+)
